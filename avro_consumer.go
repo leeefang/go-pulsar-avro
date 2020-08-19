@@ -6,13 +6,13 @@ import (
 	"strings"
 )
 
-// avroConsumer is a basic consumer to interact with schema registry, avro and pulsar
-type avroConsumer struct {
+// AvroConsumer is a basic consumer to interact with schema registry, avro and pulsar
+type AvroConsumer struct {
 	Consumer             pulsar.Consumer
-	SchemaRegistryClient *CachedSchemaRegistryClient
+	schemaRegistryClient *CachedSchemaRegistryClient
 }
 
-func NewAvroConsumer(client pulsar.Client, consumerOptions pulsar.ConsumerOptions, schemaRegistryUrls []string) (*avroConsumer, error) {
+func NewAvroConsumer(client pulsar.Client, consumerOptions pulsar.ConsumerOptions, schemaRegistryUrls []string) (*AvroConsumer, error) {
 	consumer, err := client.Subscribe(consumerOptions)
 
 	if err != nil {
@@ -20,17 +20,17 @@ func NewAvroConsumer(client pulsar.Client, consumerOptions pulsar.ConsumerOption
 	}
 
 	schemaRegistryClient := NewCachedSchemaRegistryClient(schemaRegistryUrls)
-	return &avroConsumer{
+	return &AvroConsumer{
 		consumer,
 		schemaRegistryClient,
 	}, nil
 }
 
-func (ac *avroConsumer) GetSchemaByTopic(topic string) (*goavro.Codec, error) {
-	return ac.SchemaRegistryClient.GetSchemaCodecByTopic(topic)
+func (ac *AvroConsumer) GetSchemaByTopic(topic string) (*goavro.Codec, error) {
+	return ac.schemaRegistryClient.GetSchemaCodecByTopic(topic)
 }
 
-func (ac *avroConsumer) DecodeAvroMessage(msg pulsar.Message) (interface{}, error) {
+func (ac *AvroConsumer) DecodeAvroMessage(msg pulsar.Message) (interface{}, error) {
 	mTopic := strings.ReplaceAll(strings.ReplaceAll(msg.Topic(), "non-persistent://", ""), "persistent://", "")
 	codec, err := ac.GetSchemaByTopic(mTopic)
 	if err != nil {
@@ -40,6 +40,6 @@ func (ac *avroConsumer) DecodeAvroMessage(msg pulsar.Message) (interface{}, erro
 	return datum, err
 }
 
-func (ac *avroConsumer) Close() {
+func (ac *AvroConsumer) Close() {
 	ac.Consumer.Close()
 }
