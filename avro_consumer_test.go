@@ -1,4 +1,4 @@
-package pulsar
+package pulsavro
 
 import (
 	"context"
@@ -17,6 +17,7 @@ func TestNewAvroConsumer(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Initialize pulsar client error: %v", err)
 	}
+	defer client.Close()
 	topic := "public/default/test2"
 	consumerOptions := pulsar.ConsumerOptions{
 		Topic:            topic,
@@ -28,18 +29,21 @@ func TestNewAvroConsumer(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Initialize pulsar consumer error: %v", err)
 	}
-
+	defer consumer.Close()
 	msg, err := consumer.Consumer.Receive(context.Background())
 	if err != nil {
 		log.Fatalf("Receive message error: %v", err)
 	}
 	log.Infof("message: Topic: %s, Payload: %x", msg.Topic(), msg.Payload())
 
-	msgObj, err := consumer.ParseMessage(msg)
+	msgObj, err := consumer.DecodeAvroMessage(msg)
 	if err != nil {
-		log.Fatalf("Parse message error: %v", err)
+		log.Fatalf("Decode avro message error: %v", err)
 	}
 	log.Infof("msgObj: %v", msgObj)
-
-	log.Info(msgObj["TestBool"])
+	msgMap, ok := msgObj.(map[string]interface{})
+	if ok {
+		log.Fatal("message is not type of map[string]interface{}")
+	}
+	log.Info(msgMap["TestBool"])
 }

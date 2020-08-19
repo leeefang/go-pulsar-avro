@@ -1,4 +1,4 @@
-package pulsar
+package pulsavro
 
 import (
 	"context"
@@ -28,8 +28,8 @@ func NewAvroProducer(client pulsar.Client, producerOptions pulsar.ProducerOption
 	return &AvroProducer{producer, schemaRegistryClient, schema}, nil
 }
 
-func (ap *AvroProducer) CreateMessage(value interface{}) ([]byte, error) {
-	return encodeAvroToBytes(ap.schema, value)
+func (ap *AvroProducer) EncodeAvroMessage(value interface{}) ([]byte, error) {
+	return EncodeAvroToBytes(ap.schema, value)
 }
 
 func (ap *AvroProducer) Send(message *pulsar.ProducerMessage) (pulsar.MessageID, error) {

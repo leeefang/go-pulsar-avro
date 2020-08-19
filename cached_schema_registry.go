@@ -1,4 +1,4 @@
-package pulsar
+package pulsavro
 
 import (
 	"github.com/linkedin/goavro/v2"
@@ -24,7 +24,7 @@ func NewCachedSchemaRegistryClientWithRetries(connect []string, retries int) *Ca
 	return &CachedSchemaRegistryClient{SchemaRegistryClient: SchemaRegistryClient, schemaCache: make(map[string]*goavro.Codec), schemaIdCache: make(map[string]int)}
 }
 
-// GetSchemaByTopic will return and cache the codec with the given topic information
+// GetSchemaCodecByTopic will return and cache the codec with the given topic information
 func (client *CachedSchemaRegistryClient) GetSchemaCodecByTopic(topic string) (*goavro.Codec, error) {
 	client.schemaCacheLock.RLock()
 	cachedResult := client.schemaCache[topic]

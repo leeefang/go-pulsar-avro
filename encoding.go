@@ -1,10 +1,11 @@
-package pulsar
+package pulsavro
 
 import (
 	"github.com/linkedin/goavro/v2"
 )
 
-func encodeAvroToBytes(schema string, datum interface{}) ([]byte, error) {
+// EncodeAvroToBytes convert interface{} datum to bytes
+func EncodeAvroToBytes(schema string, datum interface{}) ([]byte, error) {
 	codec, err := goavro.NewCodec(schema)
 	if err != nil {
 		return nil, err
@@ -12,7 +13,8 @@ func encodeAvroToBytes(schema string, datum interface{}) ([]byte, error) {
 	return codec.BinaryFromNative(nil, datum)
 }
 
-func decodeAvroFromBytes(schema string, payload []byte) (interface{}, error) {
+// DecodeAvroFromBytes convert bytes to interface{} datum
+func DecodeAvroFromBytes(schema string, payload []byte) (interface{}, error) {
 	codec, err := goavro.NewCodec(schema)
 	if err != nil {
 		return nil, err

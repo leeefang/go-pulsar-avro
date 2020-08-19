@@ -1,4 +1,4 @@
-package pulsar
+package pulsavro
 
 import (
 	"bytes"
@@ -104,7 +104,7 @@ func (client *SchemaRegistryClient) httpCall(method, uri string, payload io.Read
 		if err != nil {
 			return nil, err
 		}
-		if !okStatus(resp) {
+		if !isOK(resp) {
 			return nil, newError(resp)
 		}
 		return ioutil.ReadAll(resp.Body)
@@ -115,6 +115,6 @@ func retryable(resp *http.Response) bool {
 	return resp.StatusCode >= 500 && resp.StatusCode < 600
 }
 
-func okStatus(resp *http.Response) bool {
+func isOK(resp *http.Response) bool {
 	return resp.StatusCode >= 200 && resp.StatusCode < 400
 }

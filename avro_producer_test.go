@@ -1,4 +1,4 @@
-package pulsar
+package pulsavro
 
 import (
 	"github.com/apache/pulsar-client-go/pulsar"
@@ -19,7 +19,7 @@ func TestNewAvroProducer(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Initialize pulsar client error: %v", err)
 	}
-
+	defer client.Close()
 	producerOptions := pulsar.ProducerOptions{
 		Topic: "public/default/test2",
 	}
@@ -39,14 +39,15 @@ func TestNewAvroProducer(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Initialize pulsar producer error: %v", err)
 	}
+	defer producer.Close()
 	datum := map[string]interface{}{
 		"TestString": goavro.Union("string", "Test"),
 		"TestInt":    1,
 		"TestBool":   true,
 	}
-	payload, err := producer.CreateMessage(datum)
+	payload, err := producer.EncodeAvroMessage(datum)
 	if err != nil {
-		log.Fatalf("Avro Encode error: %v", err)
+		log.Fatalf("Encode avro message error: %v", err)
 	}
 	_, err = producer.Send(&pulsar.ProducerMessage{
 		Payload: payload,
